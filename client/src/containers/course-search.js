@@ -12,7 +12,8 @@ class CourseSearch extends Component {
 
         this.state = {
             value: 'course' in props ? props.course.name : "",
-            suggestions: []
+            suggestions: [],
+            open: false
         };
         
         this.getSuggestions = this.getSuggestions.bind(this);
@@ -39,7 +40,7 @@ class CourseSearch extends Component {
             course.toLowerCase().slice(0, inputLength) === inputValue
         ).map(course => { return {'key': course, 'value': course, 'text': course} });
 
-        this.setState({suggestions});
+        this.setState({suggestions, open: true});
     }
 
     onCourseSelected(event, { value }) {
@@ -54,9 +55,10 @@ class CourseSearch extends Component {
         return (
             <Dropdown placeholder='Choose a course' search selection
                 options={this.state.suggestions}
-                minCharacters={2}    // Ideally this should be 1, but there seems to be a bug
                 onChange={this.onCourseSelected}
                 onSearchChange={this.getSuggestions}
+                onClick={() => {this.setState({open: false})}}
+                open={this.state.open}
                 text={this.state.value}
                 value={this.state.value}
             />
