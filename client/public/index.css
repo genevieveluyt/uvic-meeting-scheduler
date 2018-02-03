@@ -1,0 +1,34 @@
+body {
+    font-family: 'Lato', Helvetica, sans-serif;
+    padding-top: 40px;
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: 'Roboto', Helvetica, sans-serif;
+}
+
+i.icon.remove-icon {
+    color: #aaa;
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 20px;
+}
+
+i.icon.remove-icon:hover {
+    color: black;
+}
+
+/*
+.course-list-item {
+    margin-top: 20px;
+}
+
+.course-list-item select {
+    margin-right: 20px;
+    width: 60px;
+    height: 30px;
+    vertical-align: top;
+}
+
+ */

@@ -1,10 +1,13 @@
 # Uvic Meeting Scheduler [WIP]
 
+Easily figure out when everyone on your team is free to meet based on the courses they are taking.
+
 ## Prerequisites
 
 - postgres
 - python 3
 - pipenv
+- node
 
 ## Setup
 
@@ -32,11 +35,20 @@ pipenv run python scraper.py
 cp env.template.py env.py
 
 # Edit env.py with the necessary postgres credentials
+
+# Install node requirements
+npm install --prefix client
 ```
 
 ## Start the Backend
 
 ```bash
-export FLASK_APP=app.py
-pipenv run flask run
+npm start
+```
+
+## Start the Frontend
+
+In another terminal:
+```bash
+npm start --prefix client
 ```

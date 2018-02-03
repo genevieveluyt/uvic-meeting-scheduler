@@ -1,0 +1,78 @@
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { Dropdown } from 'semantic-ui-react'
+
+import { addCourse, updateCourse } from '../actions/index';
+
+
+class CourseSearch extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            value: 'course' in props ? props.course.name : "",
+            suggestions: []
+        };
+        
+        this.getSuggestions = this.getSuggestions.bind(this);
+        this.onCourseSelected = this.onCourseSelected.bind(this);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if ('course' in nextProps) {
+            this.setState({value: nextProps.course.name});
+        }
+    }
+
+    getSuggestions(event, data) {
+        const value = data.searchQuery;
+        const inputValue = value.trim().toLowerCase();
+        const inputLength = inputValue.length;
+
+        if (inputLength === 0) { return; }
+
+        let coursesAlreadySelected = this.props.userData.map(course => course.name);
+    
+        let suggestions = this.props.courseNames.filter(course =>
+            !coursesAlreadySelected.includes(course) &&
+            course.toLowerCase().slice(0, inputLength) === inputValue
+        ).map(course => { return {'key': course, 'value': course, 'text': course} });
+
+        this.setState({suggestions});
+    }
+
+    onCourseSelected(event, { value }) {
+        if ('course' in this.props) {
+            this.props.updateCourse(this.props.course.name, value);
+        } else {
+            this.props.addCourse(value);
+        }
+    }
+
+    render() {
+        return (
+            <Dropdown placeholder='Choose a course' search selection
+                options={this.state.suggestions}
+                minCharacters={2}    // Ideally this should be 1, but there seems to be a bug
+                onChange={this.onCourseSelected}
+                onSearchChange={this.getSuggestions}
+                text={this.state.value}
+                value={this.state.value}
+            />
+        );
+    }
+}
+
+function mapStateToProps(state) {
+    return {
+        courseNames: state.courseNames,
+        userData: state.userData
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({addCourse, updateCourse}, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CourseSearch);
