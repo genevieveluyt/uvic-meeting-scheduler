@@ -83,14 +83,8 @@ export function removeCourseData(course) {
  * @param {string} section
  */
 export function updateSection(course, section) {
-    // return {
-    //     type: UPDATE_SECTION,
-    //     payload: {course, section}
-    // }
-
     return (dispatch, getState) => {
         const { userData } = getState();
-        console.log(userData);
         
         let courseData = userData.find(c => c.name === course);
         courseData[section.substring(0, 1)] = section;

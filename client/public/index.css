@@ -19,7 +19,7 @@ i.icon.remove-icon:hover {
     color: black;
 }
 
-/*
+/* 
 .course-list-item {
     margin-top: 20px;
 }
@@ -29,6 +29,10 @@ i.icon.remove-icon:hover {
     width: 60px;
     height: 30px;
     vertical-align: top;
-}
+} 
+*/
 
- */
+.ui.selection.dropdown.section-select {
+    margin-right: 1em;
+    min-width: 6em;
+} 

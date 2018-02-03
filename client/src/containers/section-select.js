@@ -12,9 +12,9 @@ class SectionSelect extends Component {
 
         this.state = {
             sections: 'course' in props ? getSections(props.courses, props.course) : [],
-            A: "A" in props ? props.A : "", // lecture
-            B: "B" in props ? props.B : "", // lab
-            T: "T" in props ? props.T : ""  // tutorial
+            A: 'A' in props ? props.A : '', // lecture
+            B: 'B' in props ? props.B : '', // lab
+            T: 'T' in props ? props.T : ''  // tutorial
         };
         
         this.getSuggestions = this.getSuggestions.bind(this);
@@ -23,13 +23,42 @@ class SectionSelect extends Component {
 
     componentWillReceiveProps(nextProps) {
         if ('course' in nextProps) {
-            this.setState({sections: getSections(nextProps.courses, nextProps.course)});
+            let sections =  getSections(nextProps.courses, nextProps.course);
+            this.setState({sections});
+
+            // If there is no section selected and there is only one section
+            // for that section type, auto-select it
+            if (sections.length > 0) {
+                let sectionTypes = this.getSectionTypes(sections);
+                let userSections = nextProps.userData
+                    .find(c => c.name === nextProps.course.name);
+                
+                for (let i = 0; i < sectionTypes.length; i++) {
+                    let sectionType = sectionTypes[i];
+
+                    if (sectionType in userSections) {
+                        this.setState({[sectionType]: userSections[sectionType]});
+                    } else {
+                        let filteredSections = this.getSectionsOfType(sections, sectionType);
+                        if (filteredSections.length === 1) {
+                            nextProps.updateSection(nextProps.course.name, filteredSections[0]);
+                        }
+                    }
+                }
+            }
         }
     }
 
+    getSectionsOfType(sections, sectionType) {
+        return sections.filter(section => section.startsWith(sectionType));
+    }
+
+    getSectionTypes(sections) {
+        return Array.from(new Set(sections.map(section => section.substring(0, 1))));
+    }
+
     getSuggestions(sectionType) {
-        return this.state.sections
-            .filter(section => section.startsWith(sectionType))
+        return this.getSectionsOfType(this.state.sections, sectionType)
             .map(section => { return {'key': section, 'value': section, 'text': section} });
     }
 
@@ -41,18 +70,17 @@ class SectionSelect extends Component {
 
     renderSections() {
         if (this.state.sections.length === 0) {
-            return "";
+            return '';
         }
 
-        const sectionTypes = Array.from(new Set(this.state.sections.map(section => section.substring(0, 1))))
-        return sectionTypes.map(sectionType => {
+        return this.getSectionTypes(this.state.sections).map(sectionType => {
             return (
-                <Dropdown key={sectionType} selection
+                <Dropdown key={sectionType} className='section-select' selection
                     options={this.getSuggestions(sectionType)}
-                    placeholder="Choose a section"
+                    placeholder='Section'
                     onChange={this.onSectionSelected}
-                    text={this.state.sectionType}
-                    value={this.state.sectionType}
+                    text={this.state[sectionType]}
+                    value={this.state[sectionType]}
                 />
             )
         });
@@ -70,7 +98,8 @@ class SectionSelect extends Component {
 function mapStateToProps(state) {
     return {
         courseNames: state.courseNames,
-        courses: state.courses
+        courses: state.courses,
+        userData: state.userData
     }
 }
 
