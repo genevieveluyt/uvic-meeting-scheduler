@@ -1,2 +1,9 @@
+# Editor
 .vscode
+
+# Scraper
 data
+
+# Flask
+__pycache__
+env.py
