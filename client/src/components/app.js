@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Grid } from 'semantic-ui-react'
+import { Grid, Sticky } from 'semantic-ui-react'
 
 import { getCourseNames } from '../actions/index';
 import CourseList from '../containers/course-list';
@@ -15,13 +15,13 @@ class App extends Component {
 
     render() {
         return (
-            <Grid container columns={2} divided className="full-height">
+            <Grid container columns={2} divided relaxed className="full-height">
                 <Grid.Row>
-                    <Grid.Column width={9} >
+                    <Grid.Column width={10} >
                         <Timetable />
                     </ Grid.Column>
-                    <Grid.Column width={7} >
-                        <CourseList />
+                    <Grid.Column width={6} >
+                        <Sticky><CourseList /></ Sticky>
                     </ Grid.Column>
                 </ Grid.Row>
             </ Grid>

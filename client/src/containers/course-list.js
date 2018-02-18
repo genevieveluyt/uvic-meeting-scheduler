@@ -11,9 +11,9 @@ class CourseList extends Component {
     renderList() {
         return this.props.userData.map(course => {
             return (
-                <List.Item key={course.name} >
+                <List.Item key={course.name} className='course-list-item'>
                     <div>
-                        <CourseSearch course={course} />
+                        <CourseSearch course={course} className='course-search' />
                         <List.Icon
                             name='remove'
                             className='remove-icon'
@@ -28,11 +28,13 @@ class CourseList extends Component {
 
     render() {
         return (
-            <List
-                verticalAlign='middle'
-            >
+            <List className='course-list'>
                 { this.renderList() }
-                <List.Item key={this.props.userData.length.toString()}><CourseSearch /></List.Item>
+                <List.Item
+                    key={this.props.userData.length.toString()}
+                    className='course-list-item'>
+                    <CourseSearch className='course-search' />
+                </List.Item>
             </ List>
         );
     };

@@ -10,29 +10,61 @@ h1, h2, h3, h4, h5 {
 i.icon.remove-icon {
     color: #aaa;
     cursor: pointer;
-    display: inline-block;
-    vertical-align: middle;
-    margin-left: 20px;
+    position: absolute;
+    right: 10px;
+    top: 4px;
 }
 
 i.icon.remove-icon:hover {
     color: black;
 }
 
-/* 
 .course-list-item {
     margin-top: 20px;
+    position: relative;
 }
 
-.course-list-item select {
-    margin-right: 20px;
-    width: 60px;
-    height: 30px;
-    vertical-align: top;
-} 
-*/
+.course-list-item .course-search {
+    max-width: 80%;
+}
 
 .ui.selection.dropdown.section-select {
-    margin-right: 1em;
-    min-width: 6em;
+    margin-right: 5%;
+    margin-top: 10px;
+    min-width: 20%;
+    max-width: 30%;
 } 
+
+.ui.fixed.table td.conflict-cell {
+    overflow: visible;
+    position: relative;
+    padding: 0;
+}
+
+.conflict-block {
+    position: absolute;
+    width: 100%;
+    border-radius: 4px;
+}
+
+.conflict-1 {
+    background-color: #C5CAE9;
+}
+
+.conflict-2 {
+    background-color: #7986CB;
+}
+
+.conflict-many {
+    background-color: #283593;
+}
+
+.conflict-block h3 {
+    color: white;
+    position: relative;
+    top: 40%;
+}
+
+.conflict-block:hover {
+    opacity: 0.8;
+}
