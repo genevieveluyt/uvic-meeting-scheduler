@@ -37,7 +37,10 @@ export function addCourse(course) {
 
         dispatch({
             type: ADD_COURSE,
-            payload: {name: course}
+            payload: {
+                name: course,
+                sections: {}
+            }
         })
     }
 }
@@ -80,7 +83,7 @@ export function updateSection(course, section) {
         const { userData } = getState();
         
         let courseData = userData.find(c => c.name === course);
-        courseData[section.substring(0, 1)] = section;
+        courseData.sections[section.substring(0, 1)] = section;
         dispatch({
             type: UPDATE_SECTION,
             payload: courseData

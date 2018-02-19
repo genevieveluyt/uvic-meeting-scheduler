@@ -64,15 +64,10 @@ class Timetable extends Component {
 
         // Loop through courses (eg CSC 110)
         for (let i = 0; i < props.userData.length; i++) {
-            let courseKeys = Object.keys(props.userData[i]);
 
-            // Loop through sections for the course (eg A02, B04)
-            for (let j = 0; j < courseKeys.length; j++) {
-                if (courseKeys[j] === 'name') {
-                    continue;
-                }
-                
-                let sectionName = props.userData[i][courseKeys[j]];
+            // Loop through section types for the course (eg A, B, T)
+            for (let sectionType in props.userData[i].sections) {
+                let sectionName = props.userData[i].sections[sectionType];
                 let section = courseData[props.userData[i].name].sections[sectionName];
 
                 // For each time block (eg. Monday, 8:30 - 9:50)

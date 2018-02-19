@@ -17,9 +17,8 @@ class SectionSelect extends Component {
         if ('course' in props) {
             this.state['sections'] = getSections(props.courses, props.course);
 
-            let userSections = props.userData.find(c => c.name === props.course.name);
+            let userSections = props.userData.find(c => c.name === props.course.name).sections;
             for (let key in userSections) {
-                if (key === 'name') continue;
                 this.state[key] = userSections[key];
             }
         }
@@ -38,7 +37,7 @@ class SectionSelect extends Component {
             if (sections.length > 0) {
                 let sectionTypes = this.getSectionTypes(sections);
                 let userSections = nextProps.userData
-                    .find(c => c.name === nextProps.course.name);
+                    .find(c => c.name === nextProps.course.name).sections;
                 
                 for (let i = 0; i < sectionTypes.length; i++) {
                     let sectionType = sectionTypes[i];
