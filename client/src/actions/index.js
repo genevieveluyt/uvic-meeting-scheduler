@@ -19,7 +19,13 @@ export function updateCourse(oldCourse, newCourse) {
         dispatch(addCourseData(newCourse));
         dispatch({
             type: UPDATE_COURSE,
-            payload: {oldCourse, newCourse}
+            payload: {
+                oldCourse,
+                newCourse: {
+                    name: newCourse,
+                    sections: {}
+                }
+            }
         })
     }
 }

@@ -10,7 +10,7 @@ export default function(state=[], action) {
         case UPDATE_COURSE:
             newState = state.map(course => {
                 if (course.name === action.payload.oldCourse) {
-                    return {name: action.payload.newCourse};
+                    return action.payload.newCourse;
                 }
                 return course;
             });
