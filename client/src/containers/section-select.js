@@ -11,11 +11,18 @@ class SectionSelect extends Component {
         super(props);
 
         this.state = {
-            sections: 'course' in props ? getSections(props.courses, props.course) : [],
-            A: 'A' in props ? props.A : '', // lecture
-            B: 'B' in props ? props.B : '', // lab
-            T: 'T' in props ? props.T : ''  // tutorial
-        };
+            sections: []
+        }
+
+        if ('course' in props) {
+            this.state['sections'] = getSections(props.courses, props.course);
+
+            let userSections = props.userData.find(c => c.name === props.course.name);
+            for (let key in userSections) {
+                if (key === 'name') continue;
+                this.state[key] = userSections[key];
+            }
+        }
         
         this.getSuggestions = this.getSuggestions.bind(this);
         this.onSectionSelected = this.onSectionSelected.bind(this);

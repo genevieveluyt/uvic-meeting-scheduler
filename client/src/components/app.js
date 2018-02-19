@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Grid, Sticky } from 'semantic-ui-react'
 
-import { getCourseNames } from '../actions/index';
+import { loadData, getCourseNames } from '../actions/api';
 import CourseList from '../containers/course-list';
 import Timetable from '../containers/timetable';
 
@@ -11,6 +11,7 @@ class App extends Component {
     constructor(props) {
         super(props);
         props.getCourseNames();
+        props.loadData();
     }
 
     render() {
@@ -30,7 +31,7 @@ class App extends Component {
 }
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({getCourseNames: getCourseNames}, dispatch);
+    return bindActionCreators({getCourseNames, loadData}, dispatch);
 }
 
 export default connect(null, mapDispatchToProps)(App);

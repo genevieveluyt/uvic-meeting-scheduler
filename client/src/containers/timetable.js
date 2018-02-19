@@ -38,7 +38,10 @@ class Timetable extends Component {
     }
 
     calculateSchedule(props) {
-        if (props.courses.length === 0) return;
+        if (props.courses.length === 0) {
+            this.setState({ conflicts: [] });
+            return;
+        }
 
         // Schedule data structure is an array where each index is an array representing a day
         // of the week. Each day of the week is split into 10 minute time units and a count of

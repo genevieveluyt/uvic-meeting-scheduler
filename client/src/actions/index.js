@@ -5,15 +5,8 @@ export const ADD_COURSE = 'ADD_COURSE';
 export const ADD_COURSE_DATA = 'ADD_COURSE_DATA';
 export const REMOVE_COURSE = 'REMOVE_COURSE';
 export const REMOVE_COURSE_DATA = 'REMOVE_COURSE_DATA';
-export const GET_COURSE_NAMES = 'GET_COURSE_NAMES';
 export const UPDATE_SECTION = 'UPDATE_SECTION';
 
-export function getCourseNames() {
-    return {
-        type: GET_COURSE_NAMES,
-        payload: getRequest('/api/courses/names')
-    }
-}
 
 /**
  * 

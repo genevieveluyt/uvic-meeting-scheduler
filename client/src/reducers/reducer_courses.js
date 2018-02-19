@@ -1,4 +1,5 @@
 import { ADD_COURSE_DATA, REMOVE_COURSE_DATA } from '../actions/index';
+import { LOAD_DATA } from '../actions/api';
 
 /*
  * This reducer is used as a cache.
@@ -14,6 +15,8 @@ import { ADD_COURSE_DATA, REMOVE_COURSE_DATA } from '../actions/index';
 
 export default function(state=[], action) {
     switch(action.type) {
+        case LOAD_DATA:
+            return action.payload.data;
         case ADD_COURSE_DATA: 
             return [...state, action.payload];
         case REMOVE_COURSE_DATA:

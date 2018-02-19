@@ -53,11 +53,17 @@ class CourseSearch extends Component {
 
     render() {
         return (
-            <Dropdown placeholder='Choose a course' search selection
+            <Dropdown placeholder='Choose a course' fluid search selection
+                className={this.props.className}
+                minCharacters={1}
                 options={this.state.suggestions}
                 onChange={this.onCourseSelected}
                 onSearchChange={this.getSuggestions}
                 onClick={() => {this.setState({open: false})}}
+                // Manually setting the "open" prop because with minCharacters={1}
+                // if the dropdown is clicked, it opens even though there are no
+                // characters... This is a problem because is there too much data
+                // to display without a filter, making the ui slow.
                 open={this.state.open}
                 text={this.state.value}
                 value={this.state.value}
