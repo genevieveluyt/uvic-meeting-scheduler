@@ -101,11 +101,14 @@ class Timetable extends Component {
                     let timeUnit = visualTimeUnit * TIME_UNITS_PER_VISUAL_UNIT + slot;
                     if (schedule[day][timeUnit] !== numConflicts) {
                         if (startVisualUnit !== null) {
-                            conflicts[day][startVisualUnit] = {
+                            if (typeof conflicts[day][startVisualUnit] === 'undefined') {
+                                conflicts[day][startVisualUnit] = [];
+                            }
+                            conflicts[day][startVisualUnit].push({
                                 slot: startSlot,
                                 numConflicts,
                                 units: conflictLength
-                            };
+                            });
                             startVisualUnit = null;
                             startSlot = 0;
                         }
@@ -125,21 +128,29 @@ class Timetable extends Component {
         this.setState({ conflicts });
     }
 
+    renderConflicts(conflicts) {
+        return conflicts.map(conflict => {
+            return (
+                <div key={conflict.slot}
+                    className={ `conflict-block conflict-${conflict.numConflicts > 2 ? "many" : conflict.numConflicts}` }
+                    style={{
+                        top: `${TIME_UNIT_HEIGHT * conflict.slot}%`,
+                        height: `${TIME_UNIT_HEIGHT * conflict.units}%`
+                    }}>
+                    <h3>{ TIME_UNIT_HEIGHT * conflict.units < 60 ? '' : conflict.numConflicts }</h3>
+                </div>
+            )
+        })
+    }
+
     renderTableCell(day, visualTimeUnit) {
         if (this.state.conflicts.length > 0 && 
             this.state.conflicts[day].length > 0 &&
-            this.state.conflicts[day][visualTimeUnit] !== undefined) {
-            let conflict = this.state.conflicts[day][visualTimeUnit];
+            typeof this.state.conflicts[day][visualTimeUnit] !== 'undefined') {
+            let conflicts = this.state.conflicts[day][visualTimeUnit];
             return (
                 <Table.Cell key={day} verticalAlign='top' className='conflict-cell'>
-                    <div 
-                        className={ `conflict-block conflict-${conflict.numConflicts > 2 ? "many" : conflict.numConflicts}` }
-                        style={{
-                            top: `${TIME_UNIT_HEIGHT * conflict.slot}%`,
-                            height: `${TIME_UNIT_HEIGHT * conflict.units}%`
-                        }}>
-                        <h3>{ conflict.numConflicts }</h3>
-                    </div>
+                    { this.renderConflicts(conflicts) }
                 </Table.Cell>
             )
         }
