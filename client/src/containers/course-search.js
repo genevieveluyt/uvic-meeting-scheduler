@@ -33,12 +33,13 @@ class CourseSearch extends Component {
 
         if (inputLength === 0) { return; }
 
-        let coursesAlreadySelected = this.props.userData.map(course => course.name);
+        let coursesAlreadySelected = this.props.userData.map(course => course.get('name'));
     
         let suggestions = this.props.courseNames.filter(course =>
             !coursesAlreadySelected.includes(course) &&
             course.toLowerCase().slice(0, inputLength) === inputValue
-        ).map(course => { return {'key': course, 'value': course, 'text': course} });
+        ).map(course => { return {'key': course, 'value': course, 'text': course} })
+        .toArray();
 
         this.setState({suggestions, open: true});
     }

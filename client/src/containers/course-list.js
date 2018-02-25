@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { List } from 'semantic-ui-react'
+import { List } from 'semantic-ui-react';
 
 import { removeCourse } from '../actions/index';
 import CourseSearch from './course-search';
@@ -11,16 +11,16 @@ class CourseList extends Component {
     renderList() {
         return this.props.userData.map(course => {
             return (
-                <List.Item key={course.name} className='course-list-item'>
+                <List.Item key={course.get('name')} className='course-list-item'>
                     <div>
-                        <CourseSearch course={course} className='course-search' />
+                        <CourseSearch course={course.toJS()} className='course-search' />
                         <List.Icon
                             name='remove'
                             className='remove-icon'
-                            onClick={ () => this.props.removeCourse(course.name)}
+                            onClick={ () => this.props.removeCourse(course.get('name')) }
                         />
                     </div>
-                    <SectionSelect course={course} />
+                    <SectionSelect course={course.toJS()} />
                 </List.Item>
             )
         });
@@ -31,7 +31,7 @@ class CourseList extends Component {
             <List className='course-list'>
                 { this.renderList() }
                 <List.Item
-                    key={this.props.userData.length.toString()}
+                    key={this.props.userData.size.toString()}
                     className='course-list-item'>
                     <CourseSearch className='course-search' />
                 </List.Item>

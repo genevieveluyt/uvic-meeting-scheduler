@@ -15,12 +15,9 @@ class SectionSelect extends Component {
         }
 
         if ('course' in props) {
-            this.state['sections'] = getSections(props.courses, props.course);
-
-            let userSections = props.userData.find(c => c.name === props.course.name).sections;
-            for (let key in userSections) {
-                this.state[key] = userSections[key];
-            }
+            this.state['sections'] = getSections(props.courses, props.course.name);
+            let userSections = props.userData.find(c => c.get('name') === props.course.name).get('sections').toObject();
+            Object.assign(this.state, userSections);
         }
         
         this.getSuggestions = this.getSuggestions.bind(this);
@@ -29,23 +26,23 @@ class SectionSelect extends Component {
 
     componentWillReceiveProps(nextProps) {
         if ('course' in nextProps) {
-            let sections =  getSections(nextProps.courses, nextProps.course);
+            let sections = getSections(nextProps.courses, nextProps.course.name);
+            console.log(sections);
             this.setState({sections});
 
             // If there is no section selected and there is only one section
             // for that section type, auto-select it
             if (sections.length > 0) {
-                let sectionTypes = this.getSectionTypes(sections);
+                let sectionTypes = getSectionTypes(sections);
                 let userSections = nextProps.userData
-                    .find(c => c.name === nextProps.course.name).sections;
+                    .find(c => c.get('name') === nextProps.course.name)
+                    .get('sections').toJS();
                 
-                for (let i = 0; i < sectionTypes.length; i++) {
-                    let sectionType = sectionTypes[i];
-
+                for (let sectionType of sectionTypes) {
                     if (sectionType in userSections) {
                         this.setState({[sectionType]: userSections[sectionType]});
                     } else {
-                        let filteredSections = this.getSectionsOfType(sections, sectionType);
+                        let filteredSections = getSectionsOfType(sections, sectionType);
                         if (filteredSections.length === 1) {
                             nextProps.updateSection(nextProps.course.name, filteredSections[0]);
                         }
@@ -55,16 +52,8 @@ class SectionSelect extends Component {
         }
     }
 
-    getSectionsOfType(sections, sectionType) {
-        return sections.filter(section => section.startsWith(sectionType));
-    }
-
-    getSectionTypes(sections) {
-        return Array.from(new Set(sections.map(section => section.substring(0, 1))));
-    }
-
     getSuggestions(sectionType) {
-        return this.getSectionsOfType(this.state.sections, sectionType)
+        return getSectionsOfType(this.state.sections, sectionType)
             .map(section => { return {'key': section, 'value': section, 'text': section} });
     }
 
@@ -79,7 +68,7 @@ class SectionSelect extends Component {
             return '';
         }
 
-        return this.getSectionTypes(this.state.sections).map(sectionType => {
+        return getSectionTypes(this.state.sections).map(sectionType => {
             return (
                 <Dropdown key={sectionType} className='section-select' selection
                     options={this.getSuggestions(sectionType)}
@@ -101,9 +90,26 @@ class SectionSelect extends Component {
     }
 }
 
+/**
+ * Get a list of sections for the given course
+ * 
+ * @param {Immutable.Map} courses 
+ * @param {String} course 
+ */
+function getSections(courses, course) {
+    return courses.has(course) ? courses.get(course).get('sections').keySeq().toArray() : [];
+}
+
+function getSectionsOfType(sections, sectionType) {
+    return sections.filter(section => section.startsWith(sectionType)).sort();
+}
+
+function getSectionTypes(sections) {
+    return Array.from(new Set(sections.map(section => section.substring(0, 1)))).sort();
+}
+
 function mapStateToProps(state) {
     return {
-        courseNames: state.courseNames,
         courses: state.courses,
         userData: state.userData
     }
@@ -111,11 +117,6 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({updateSection}, dispatch);
-}
-
-function getSections(courses, course) {
-    let courseData = courses.find(c => course.name === c.name);
-    return courseData ? Object.keys(courseData.sections) : [];
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SectionSelect);

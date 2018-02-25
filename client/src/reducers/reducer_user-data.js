@@ -1,32 +1,49 @@
+import { List, fromJS } from 'immutable';
+
 import { UPDATE_COURSE, ADD_COURSE, REMOVE_COURSE, UPDATE_SECTION } from '../actions/index';
 import { LOAD_DATA, saveData } from '../actions/api';
 
-export default function(state=[], action) {
-    let newState = [];
+/**
+ * Sample structure
+ * [
+ *      {
+ *          name: "CSC 110",
+ *          sections: {
+ *              A: "A01",
+ *              B: "B06",
+ *              ...
+ *          }
+ *      },
+ *      ...
+ * ]
+ */
+
+export default function(state=List(), action) {
+    let newState = List();
 
     switch(action.type) {
         case LOAD_DATA:
-            return action.payload.userData;
+            return fromJS(action.payload.userData);
         case UPDATE_COURSE:
             newState = state.map(course => {
-                if (course.name === action.payload.oldCourse) {
-                    return action.payload.newCourse;
+                if (course.get('name') === action.payload.oldCourse) {
+                    return fromJS(action.payload.newCourse);
                 }
                 return course;
             });
             break;
         case ADD_COURSE: 
-            newState = [...state, action.payload];
+            newState = state.push(fromJS(action.payload));
             break;
         case REMOVE_COURSE:
             newState = state.filter(course => {
-                return course.name !== action.payload;
+                return course.get('name') !== action.payload;
             });
             break;
         case UPDATE_SECTION:
             newState = state.map(course => {
-                if (course.name === action.payload.name) {
-                    return action.payload;
+                if (course.get('name') === action.payload.course) {
+                    return course.setIn(['sections', action.payload.sectionType], action.payload.section);
                 }
                 return course;
             });
@@ -35,6 +52,6 @@ export default function(state=[], action) {
             return state;
     }
 
-    saveData(newState);
+    saveData(newState.toJS());
     return newState;
 }

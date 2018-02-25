@@ -7,11 +7,18 @@ from . import db_interface
 def index():
     return 'Welcome to Uvic Meeting Scheduler!'
 
+@app.route('/clear')
+def clear():
+    session['data'] = []
+    return 'Data cleared'
+
 @app.route('/api/me', methods=['GET', 'POST'])
 def data():
     if request.method == 'GET':
         user_data = session.get('data', [])
-        data = [get_course_data(course['name']) for course in user_data]
+        data = {}
+        for course in user_data:
+            data[course['name']] = get_course_data(course['name'])
 
         return jsonify({
             'userData': user_data,

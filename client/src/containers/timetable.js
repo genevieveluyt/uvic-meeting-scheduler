@@ -38,14 +38,14 @@ class Timetable extends Component {
     }
 
     calculateSchedule(props) {
-        if (props.courses.length === 0) {
+        if (props.courses.size === 0) {
             this.setState({ conflicts: [] });
             return;
         }
 
         // Schedule data structure is an array where each index is an array representing a day
-        // of the week. Each day of the week is split into 10 minute time units and a count of
-        // the number of courses that occur in any given time unit is stored in the array.
+        // of the week. Each day of the week is split into time units of size TIME_UNIT_SIZE and a
+        // count of the number of courses that occur in any given time unit is stored in the array.
         let schedule = [];
         let numDays = Object.keys(DAY_MAP).length;
         for (let i = 0; i < numDays; i++) {
@@ -56,31 +56,25 @@ class Timetable extends Component {
             }
         }
 
-        // Convert array into object with course name as key
-        let courseData = {};
-        for (let i = 0; i < props.courses.length; i++) {
-            courseData[props.courses[i].name] = props.courses[i];
-        }
+        let courseData = props.courses.toJS();
 
         // Loop through courses (eg CSC 110)
-        for (let i = 0; i < props.userData.length; i++) {
+        for (let course of props.userData) {
 
-            // Loop through section types for the course (eg A, B, T)
-            for (let sectionType in props.userData[i].sections) {
-                let sectionName = props.userData[i].sections[sectionType];
-                let section = courseData[props.userData[i].name].sections[sectionName];
+            // Loop through sections the course (eg A02, B06, T11)
+            for (let sectionName of course.get('sections').values()) {
+                let section = courseData[course.get('name')].sections[sectionName];
 
-                // For each time block (eg. Monday, 8:30 - 9:50)
-                for (let j = 0; j < section.length; j++) {
-                    let lecture = section[j];
+                // Loops through time blocks for the section (eg. Monday, 8:30 - 9:50)
+                for (let lecture of section) {
                     let start = moment(`${lecture.start.hour}-${lecture.start.minute}`, 'HH-mm');
                     let end = moment(`${lecture.end.hour}-${lecture.end.minute}`, 'HH-mm');
                     let numTimeUnits = moment.duration(end.diff(start)).asMinutes() / TIME_UNIT_SIZE;
                     let startTimeUnit = moment.duration(start.diff(MIN_TIME)).asMinutes() / TIME_UNIT_SIZE;
                     
                     // Increment the time units taken up by this time block in the schedule
-                    for (let k = startTimeUnit; k < startTimeUnit + numTimeUnits; k++) {
-                        schedule[DAY_MAP[lecture.day]][k]++;
+                    for (let i = startTimeUnit; i < startTimeUnit + numTimeUnits; i++) {
+                        schedule[DAY_MAP[lecture.day]][i]++;
                     }
                 }
             }

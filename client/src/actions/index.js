@@ -85,14 +85,12 @@ export function removeCourseData(course) {
  * @param {string} section
  */
 export function updateSection(course, section) {
-    return (dispatch, getState) => {
-        const { userData } = getState();
-        
-        let courseData = userData.find(c => c.name === course);
-        courseData.sections[section.substring(0, 1)] = section;
-        dispatch({
-            type: UPDATE_SECTION,
-            payload: courseData
-        });
+    return {
+        type: UPDATE_SECTION,
+        payload: {
+            course,
+            sectionType: section.substring(0, 1),
+            section: section
+        }
     }
 }
