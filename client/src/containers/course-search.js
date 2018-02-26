@@ -33,7 +33,8 @@ class CourseSearch extends Component {
 
         if (inputLength === 0) { return; }
 
-        let coursesAlreadySelected = this.props.userData.map(course => course.get('name'));
+        let coursesAlreadySelected = this.props.schedule.get('courses')
+            .map(course => course.get('name'));
     
         let suggestions = this.props.courseNames.filter(course =>
             !coursesAlreadySelected.includes(course) &&
@@ -46,9 +47,9 @@ class CourseSearch extends Component {
 
     onCourseSelected(event, { value }) {
         if ('course' in this.props) {
-            this.props.updateCourse(this.props.course.name, value);
+            this.props.updateCourse(this.props.schedule.get('name'), this.props.course.name, value);
         } else {
-            this.props.addCourse(value);
+            this.props.addCourse(this.props.schedule.get('name'), value);
         }
     }
 
@@ -75,8 +76,7 @@ class CourseSearch extends Component {
 
 function mapStateToProps(state) {
     return {
-        courseNames: state.courseNames,
-        userData: state.userData
+        courseNames: state.courseNames
     }
 }
 

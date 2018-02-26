@@ -15,8 +15,10 @@ class SectionSelect extends Component {
         }
 
         if ('course' in props) {
-            this.state['sections'] = getSections(props.courses, props.course.name);
-            let userSections = props.userData.find(c => c.get('name') === props.course.name).get('sections').toObject();
+            this.state.sections = getSections(props.courses, props.course.name);
+            let userSections = props.schedule.get('courses')
+                .find(course => course.get('name') === props.course.name)
+                .get('sections').toObject();
             Object.assign(this.state, userSections);
         }
         
@@ -27,14 +29,13 @@ class SectionSelect extends Component {
     componentWillReceiveProps(nextProps) {
         if ('course' in nextProps) {
             let sections = getSections(nextProps.courses, nextProps.course.name);
-            console.log(sections);
             this.setState({sections});
 
             // If there is no section selected and there is only one section
             // for that section type, auto-select it
             if (sections.length > 0) {
                 let sectionTypes = getSectionTypes(sections);
-                let userSections = nextProps.userData
+                let userSections = nextProps.schedule.get('courses')
                     .find(c => c.get('name') === nextProps.course.name)
                     .get('sections').toJS();
                 
@@ -44,7 +45,7 @@ class SectionSelect extends Component {
                     } else {
                         let filteredSections = getSectionsOfType(sections, sectionType);
                         if (filteredSections.length === 1) {
-                            nextProps.updateSection(nextProps.course.name, filteredSections[0]);
+                            nextProps.updateSection(nextProps.schedule.get('name'), nextProps.course.name, filteredSections[0]);
                         }
                     }
                 }
@@ -59,7 +60,7 @@ class SectionSelect extends Component {
 
     onSectionSelected(event, { value }) {
         if (this.props.course) {
-            this.props.updateSection(this.props.course.name, value);
+            this.props.updateSection(this.props.schedule.get('name'), this.props.course.name, value);
         }
     }
 
@@ -93,8 +94,8 @@ class SectionSelect extends Component {
 /**
  * Get a list of sections for the given course
  * 
- * @param {Immutable.Map} courses 
- * @param {String} course 
+ * @param {Immutable.Map} courses - dictionary of course objects
+ * @param {String} course - course name
  */
 function getSections(courses, course) {
     return courses.has(course) ? courses.get(course).get('sections').keySeq().toArray() : [];
@@ -110,8 +111,7 @@ function getSectionTypes(sections) {
 
 function mapStateToProps(state) {
     return {
-        courses: state.courses,
-        userData: state.userData
+        courses: state.courses
     }
 }
 

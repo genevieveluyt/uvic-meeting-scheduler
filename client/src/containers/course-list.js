@@ -9,18 +9,20 @@ import SectionSelect from './section-select';
 
 class CourseList extends Component {
     renderList() {
-        return this.props.userData.map(course => {
+        return this.props.schedule.get('courses').map(course => {
             return (
                 <List.Item key={course.get('name')} className='course-list-item'>
                     <div>
-                        <CourseSearch course={course.toJS()} className='course-search' />
+                        <CourseSearch schedule={this.props.schedule}
+                            course={course.toJS()} className='course-search'
+                        />
                         <List.Icon
                             name='remove'
                             className='remove-icon'
-                            onClick={ () => this.props.removeCourse(course.get('name')) }
+                            onClick={ () => this.props.removeCourse(this.props.schedule.get('name'), course.get('name')) }
                         />
                     </div>
-                    <SectionSelect course={course.toJS()} />
+                    <SectionSelect schedule={this.props.schedule} course={course.toJS()} />
                 </List.Item>
             )
         });
@@ -31,9 +33,11 @@ class CourseList extends Component {
             <List className='course-list'>
                 { this.renderList() }
                 <List.Item
-                    key={this.props.userData.size.toString()}
+                    key={this.props.schedule.get('courses').size.toString()}
                     className='course-list-item'>
-                    <CourseSearch className='course-search' />
+                    <CourseSearch schedule={this.props.schedule}
+                        className='course-search'
+                    />
                 </List.Item>
             </ List>
         );

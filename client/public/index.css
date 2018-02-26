@@ -20,8 +20,11 @@ i.icon.remove-icon:hover {
 }
 
 .course-list-item {
-    margin-top: 20px;
     position: relative;
+}
+
+.course-list-item:not(:first-child) {
+    margin-top: 20px;
 }
 
 .course-list-item .course-search {

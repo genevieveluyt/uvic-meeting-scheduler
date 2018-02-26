@@ -17,8 +17,12 @@ def data():
     if request.method == 'GET':
         user_data = session.get('data', [])
         data = {}
-        for course in user_data:
-            data[course['name']] = get_course_data(course['name'])
+        user_courses = set()
+        for schedule in user_data:
+            for course in schedule.get('courses', []):
+                user_courses.add(course['name'])
+        for course in user_courses:
+            data[course] = get_course_data(course)
 
         return jsonify({
             'userData': user_data,

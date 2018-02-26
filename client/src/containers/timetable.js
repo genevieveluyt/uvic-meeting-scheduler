@@ -46,35 +46,39 @@ class Timetable extends Component {
         // Schedule data structure is an array where each index is an array representing a day
         // of the week. Each day of the week is split into time units of size TIME_UNIT_SIZE and a
         // count of the number of courses that occur in any given time unit is stored in the array.
-        let schedule = [];
+        let scheduleData = [];
         let numDays = Object.keys(DAY_MAP).length;
         for (let i = 0; i < numDays; i++) {
-            schedule[i] = []
+            scheduleData[i] = []
 
             for (let j = 0; j < TIME_UNITS; j++) {
-                schedule[i][j] = 0;
+                scheduleData[i][j] = 0;
             }
         }
 
         let courseData = props.courses.toJS();
 
-        // Loop through courses (eg CSC 110)
-        for (let course of props.userData) {
+        // Loop through schedules
+        for (let schedule of props.userData) {
 
-            // Loop through sections the course (eg A02, B06, T11)
-            for (let sectionName of course.get('sections').values()) {
-                let section = courseData[course.get('name')].sections[sectionName];
+            // Loop through courses (eg CSC 110)
+            for (let course of schedule.get('courses')) {
 
-                // Loops through time blocks for the section (eg. Monday, 8:30 - 9:50)
-                for (let lecture of section) {
-                    let start = moment(`${lecture.start.hour}-${lecture.start.minute}`, 'HH-mm');
-                    let end = moment(`${lecture.end.hour}-${lecture.end.minute}`, 'HH-mm');
-                    let numTimeUnits = moment.duration(end.diff(start)).asMinutes() / TIME_UNIT_SIZE;
-                    let startTimeUnit = moment.duration(start.diff(MIN_TIME)).asMinutes() / TIME_UNIT_SIZE;
-                    
-                    // Increment the time units taken up by this time block in the schedule
-                    for (let i = startTimeUnit; i < startTimeUnit + numTimeUnits; i++) {
-                        schedule[DAY_MAP[lecture.day]][i]++;
+                // Loop through sections the course (eg A02, B06, T11)
+                for (let sectionName of course.get('sections').values()) {
+                    let section = courseData[course.get('name')].sections[sectionName];
+
+                    // Loops through time blocks for the section (eg. Monday, 8:30 - 9:50)
+                    for (let lecture of section) {
+                        let start = moment(`${lecture.start.hour}-${lecture.start.minute}`, 'HH-mm');
+                        let end = moment(`${lecture.end.hour}-${lecture.end.minute}`, 'HH-mm');
+                        let numTimeUnits = moment.duration(end.diff(start)).asMinutes() / TIME_UNIT_SIZE;
+                        let startTimeUnit = moment.duration(start.diff(MIN_TIME)).asMinutes() / TIME_UNIT_SIZE;
+                        
+                        // Increment the time units taken up by this time block in the schedule
+                        for (let i = startTimeUnit; i < startTimeUnit + numTimeUnits; i++) {
+                            scheduleData[DAY_MAP[lecture.day]][i]++;
+                        }
                     }
                 }
             }
@@ -93,7 +97,7 @@ class Timetable extends Component {
                 for (let slot = 0; slot < TIME_UNITS_PER_VISUAL_UNIT; slot++) {
                     conflictLength++;
                     let timeUnit = visualTimeUnit * TIME_UNITS_PER_VISUAL_UNIT + slot;
-                    if (schedule[day][timeUnit] !== numConflicts) {
+                    if (scheduleData[day][timeUnit] !== numConflicts) {
                         if (startVisualUnit !== null) {
                             if (typeof conflicts[day][startVisualUnit] === 'undefined') {
                                 conflicts[day][startVisualUnit] = [];
@@ -107,7 +111,7 @@ class Timetable extends Component {
                             startSlot = 0;
                         }
 
-                        numConflicts = schedule[day][timeUnit];
+                        numConflicts = scheduleData[day][timeUnit];
                         if (numConflicts > 0) {
                             startVisualUnit = visualTimeUnit;
                             startSlot = slot;
