@@ -72,3 +72,7 @@ i.icon.remove-icon:hover {
 .conflict-block:hover {
     opacity: 0.8;
 }
+
+.conflict-popup td {
+    padding: 0 5px;
+}

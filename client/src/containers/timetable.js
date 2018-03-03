@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Table } from 'semantic-ui-react';
+import { Table, Popup } from 'semantic-ui-react';
 
 var moment = require('moment');
 
@@ -52,7 +52,7 @@ class Timetable extends Component {
             scheduleData[i] = []
 
             for (let j = 0; j < TIME_UNITS; j++) {
-                scheduleData[i][j] = 0;
+                scheduleData[i][j] = [];
             }
         }
 
@@ -75,9 +75,13 @@ class Timetable extends Component {
                         let numTimeUnits = moment.duration(end.diff(start)).asMinutes() / TIME_UNIT_SIZE;
                         let startTimeUnit = moment.duration(start.diff(MIN_TIME)).asMinutes() / TIME_UNIT_SIZE;
                         
-                        // Increment the time units taken up by this time block in the schedule
+                        // Add section to the list of sections that take place in the timeblock
                         for (let i = startTimeUnit; i < startTimeUnit + numTimeUnits; i++) {
-                            scheduleData[DAY_MAP[lecture.day]][i]++;
+                            scheduleData[DAY_MAP[lecture.day]][i].push({
+                                course: course.get('name'),
+                                section: sectionName,
+                                schedule: schedule.get('name')
+                            });
                         }
                     }
                 }
@@ -89,6 +93,7 @@ class Timetable extends Component {
         let startSlot = 0;
         let conflictLength = 0;
         let numConflicts = 0;
+        let data = null;
 
         for (let day = 0; day < Object.keys(DAY_MAP).length; day++) {
             conflicts[day] = [];
@@ -97,7 +102,7 @@ class Timetable extends Component {
                 for (let slot = 0; slot < TIME_UNITS_PER_VISUAL_UNIT; slot++) {
                     conflictLength++;
                     let timeUnit = visualTimeUnit * TIME_UNITS_PER_VISUAL_UNIT + slot;
-                    if (scheduleData[day][timeUnit] !== numConflicts) {
+                    if (scheduleData[day][timeUnit].length !== numConflicts) {
                         if (startVisualUnit !== null) {
                             if (typeof conflicts[day][startVisualUnit] === 'undefined') {
                                 conflicts[day][startVisualUnit] = [];
@@ -105,16 +110,18 @@ class Timetable extends Component {
                             conflicts[day][startVisualUnit].push({
                                 slot: startSlot,
                                 numConflicts,
-                                units: conflictLength
+                                units: conflictLength,
+                                data
                             });
                             startVisualUnit = null;
                             startSlot = 0;
                         }
 
-                        numConflicts = scheduleData[day][timeUnit];
+                        numConflicts = scheduleData[day][timeUnit].length;
                         if (numConflicts > 0) {
                             startVisualUnit = visualTimeUnit;
                             startSlot = slot;
+                            data = scheduleData[day][timeUnit]
                         }
 
                         conflictLength = 0;
@@ -126,17 +133,39 @@ class Timetable extends Component {
         this.setState({ conflicts });
     }
 
+    renderConflict(conflict) {
+        return (
+            <div
+                className={ `conflict-block conflict-${conflict.numConflicts > 2 ? "many" : conflict.numConflicts}` }
+                style={{
+                    top: `${TIME_UNIT_HEIGHT * conflict.slot}%`,
+                    height: `${TIME_UNIT_HEIGHT * conflict.units}%`
+                }}>
+                <h3>{ TIME_UNIT_HEIGHT * conflict.units < 60 ? '' : conflict.numConflicts }</h3>
+            </div>
+        )
+    }
+
+    renderPopupRow(data) {
+        return (
+            <tr key={`${data.schedule}: ${data.course}`}>
+                <td>{data.schedule}</td>
+                <td>{data.course}</td>
+                <td>{data.section}</td>
+            </tr>
+        )
+    }
+
     renderConflicts(conflicts) {
         return conflicts.map(conflict => {
             return (
-                <div key={conflict.slot}
-                    className={ `conflict-block conflict-${conflict.numConflicts > 2 ? "many" : conflict.numConflicts}` }
-                    style={{
-                        top: `${TIME_UNIT_HEIGHT * conflict.slot}%`,
-                        height: `${TIME_UNIT_HEIGHT * conflict.units}%`
-                    }}>
-                    <h3>{ TIME_UNIT_HEIGHT * conflict.units < 60 ? '' : conflict.numConflicts }</h3>
-                </div>
+                <Popup key={conflict.slot} trigger={this.renderConflict(conflict)}>
+                    <table className='conflict-popup'>
+                        <tbody>
+                            {conflict.data.map(d => this.renderPopupRow(d))}
+                        </tbody>
+                    </table>
+                </ Popup>
             )
         })
     }
