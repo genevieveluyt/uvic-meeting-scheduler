@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Grid, Sticky } from 'semantic-ui-react'
+import { Grid } from 'semantic-ui-react'
 
 import { loadData, getCourseNames } from '../actions/api';
 import { dismissError } from '../actions/index'
@@ -41,7 +41,7 @@ class App extends Component {
                         <Timetable />
                     </ Grid.Column>
                     <Grid.Column width={6} >
-                        <Sticky><ScheduleList /></ Sticky>
+                        <ScheduleList />
                     </ Grid.Column>
                 </ Grid.Row>
             </ Grid>

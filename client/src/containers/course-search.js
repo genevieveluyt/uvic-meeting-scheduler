@@ -55,7 +55,7 @@ class CourseSearch extends Component {
 
     render() {
         return (
-            <Dropdown placeholder='Choose a course' fluid search selection
+            <Dropdown placeholder='Type a course' fluid search selection
                 className={this.props.className}
                 minCharacters={1}
                 options={this.state.suggestions}

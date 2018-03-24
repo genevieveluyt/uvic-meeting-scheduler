@@ -35,9 +35,7 @@ class CourseList extends Component {
                 <List.Item
                     key={this.props.schedule.get('courses').size.toString()}
                     className='course-list-item'>
-                    <CourseSearch schedule={this.props.schedule}
-                        className='course-search'
-                    />
+                    <CourseSearch schedule={this.props.schedule} />
                 </List.Item>
             </ List>
         );
