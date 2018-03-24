@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { Accordion, Icon, Button, Modal, Form, Divider } from 'semantic-ui-react'
+import { Accordion, Icon, Button } from 'semantic-ui-react'
 
-import { addSchedule, updateSchedule, removeSchedule } from '../actions/index';
-import CourseList from './course-list';
+import Schedule from './schedule';
+import EditScheduleModal from './editScheduleModal';
 
 class ScheduleList extends Component {
     constructor(props) {
@@ -12,20 +11,19 @@ class ScheduleList extends Component {
 
         this.state = {
             activeIndex: 0,
-            modalOpen: false,
-            editSchedule: '',
-            scheduleField: ''
+            modalOpen: false
         };
 
         this.onClickSchedule = this.onClickSchedule.bind(this);
         this.renderSchedules = this.renderSchedules.bind(this);
-        this.onFormSubmit = this.onFormSubmit.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.userData.size === 1) {
             this.setState({activeIndex: 0});
-        } else if (nextProps.userData.size > this.props.userData.size) {
+        } else if (nextProps.userData.size > this.props.userData.size || this.state.activeIndex >= nextProps.userData.size) {
+            // if just added a schedule, open that schedule
+            // if just deleted the last schedule, open the second to last schedule (now the last schedule)
             this.setState({activeIndex: nextProps.userData.size-1});
         }
     }
@@ -37,53 +35,6 @@ class ScheduleList extends Component {
         this.setState({ activeIndex: newIndex });
     }
 
-    onFormSubmit() {
-        if (this.state.editSchedule) {
-            if (this.state.editSchedule !== this.state.scheduleField) {
-                this.props.updateSchedule(this.state.editSchedule, this.state.scheduleField)
-            }
-        } else {
-            this.props.addSchedule(this.state.scheduleField);
-        }
-        this.setState({ modalOpen: false });
-    }
-
-    renderEditScheduleModal() {
-        return (
-            <Modal size='tiny' open={this.state.modalOpen}>
-                <Modal.Header>
-                    Edit Schedule
-                </Modal.Header>
-                <Modal.Content>
-                    <Form onSubmit={this.onFormSubmit}>
-                        <Form.Field>
-                            <label>Schedule Name</label>
-                            <Form.Input placeholder='Alison' value={this.state.scheduleField}
-                                onChange={(e, { value }) => this.setState({ scheduleField: value })}
-                            />
-                        </Form.Field>
-                    </ Form>
-                </Modal.Content>
-                <Modal.Actions>
-                    {this.state.editSchedule ?
-                        <Button negative icon='trash' content='Delete schedule' floated='left'
-                            onClick={() => {
-                                this.props.removeSchedule(this.state.editSchedule);
-                                this.setState({ modalOpen: false });
-                            }}
-                        /> : ''
-                    }
-                    <Button content='Cancel'
-                        onClick={() => {this.setState({ modalOpen: false })}}
-                    />
-                    <Button positive icon='checkmark' labelPosition='right' content='Save'
-                        onClick={this.onFormSubmit}
-                    />
-                </Modal.Actions>
-            </Modal>
-        )
-    }
-
     renderSchedules() {
         return this.props.userData.map((schedule, i) => {
             return (
@@ -93,15 +44,7 @@ class ScheduleList extends Component {
                         {schedule.get('name')}
                     </Accordion.Title>
                     <Accordion.Content active={this.state.activeIndex === i}>
-                        <CourseList schedule={schedule} />
-                        <Divider />
-                        <Button basic icon='edit' content='Edit Schedule'
-                            onClick={() => this.setState({
-                                editSchedule: schedule.get('name'),
-                                scheduleField: schedule.get('name'),
-                                modalOpen: true
-                            })}
-                        />
+                        <Schedule schedule={schedule} />
                     </Accordion.Content>
                 </div>
             )
@@ -114,8 +57,6 @@ class ScheduleList extends Component {
                 <div style={{textAlign: 'right'}}>
                     <Button icon='plus' labelPosition='left' content='Add Schedule'
                         onClick={() => {this.setState({
-                            editSchedule: '',
-                            scheduleField: '',
                             modalOpen: true })
                         }}
                         style={{marginRight: 0}}
@@ -126,7 +67,10 @@ class ScheduleList extends Component {
                         { this.renderSchedules() }
                     </ Accordion>
                 }
-                { this.renderEditScheduleModal() }
+                <EditScheduleModal
+                    open={this.state.modalOpen}
+                    onChange={({open}) => this.setState({modalOpen: open})}
+                />
             </div>
         )
     }
@@ -138,8 +82,4 @@ function mapStateToProps(state) {
     }
 }
 
-function mapDispatchToProps(dispatch) {
-    return bindActionCreators({addSchedule, updateSchedule, removeSchedule}, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(ScheduleList);
+export default connect(mapStateToProps)(ScheduleList);

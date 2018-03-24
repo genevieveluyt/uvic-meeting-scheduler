@@ -13,7 +13,7 @@ const DAY_MAP = {
 }
 
 const MIN_TIME = moment('8:30', 'HH:mm');
-const MAX_TIME = moment('20:00', 'HH:mm');
+const MAX_TIME = moment('21:00', 'HH:mm');
 const TIME_UNIT_SIZE = 10;  // minutes
 const TIME_UNITS = moment.duration(MAX_TIME.diff(MIN_TIME)).asMinutes() / TIME_UNIT_SIZE;
 const VISUAL_TIME_UNIT = 30;
@@ -63,10 +63,13 @@ class Timetable extends Component {
 
             // Loop through courses (eg CSC 110)
             for (let course of schedule.get('courses')) {
+                if (!(course.get('name') in courseData)) {
+                    continue;
+                }
 
-                // Loop through sections the course (eg A02, B06, T11)
+                // Loop through sections for the course (eg A02, B06, T11)
                 for (let sectionName of course.get('sections').values()) {
-                    let section = courseData[course.get('name')].sections[sectionName];
+                    let section = courseData[course.get('name')].sections[sectionName].times;
 
                     // Loops through time blocks for the section (eg. Monday, 8:30 - 9:50)
                     for (let lecture of section) {

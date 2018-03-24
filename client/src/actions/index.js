@@ -31,42 +31,53 @@ export function updateCourse(schedule, oldCourse, newCourse) {
 }
 
 /**
- * 
+ * @param {string} schedule
  * @param {string} course 
+ * @param {object} courseData - optional
  */
-export function addCourse(schedule, course) {
+export function addCourse(schedule, course, courseData) {
     return (dispatch, getState) => {
-        dispatch(addCourseData(course));
-        dispatch({
-            type: ADD_COURSE,
-            payload: {
-                schedule,
-                course: {
-                    name: course,
-                    sections: {}
-                }
-            }
+        let courseExists = !!getState().userData.find(s => {
+            return !!s.get('courses').find(c => c.get('name') === course);
         })
-    }
-}
 
-export function addCourseData(course) {
-    return (dispatch, getState) => {
-        let courseData = getState().courses.find(course =>
-            course.get('name') === course
-        );
-        if (!courseData) {
+        if (!courseExists) {
+            dispatch(addCourseData(course, courseData));
             dispatch({
-                type: ADD_COURSE_DATA,
-                payload: getRequest(`/api/courses/${course}`)
+                type: ADD_COURSE,
+                payload: {
+                    schedule,
+                    course: {
+                        name: course,
+                        sections: {}
+                    }
+                }
             })
         }
     }
 }
 
 /**
- * @param {string} schedule : schedule name
- * @param {string} course : course name
+ * @param {string} course 
+ * @param {object} courseData - optional
+ */
+export function addCourseData(course, courseData) {
+    return (dispatch, getState) => {
+        let courseExists = !!getState().courses.find(course =>
+            course.get('name') === course
+        );
+        if (!courseExists) {
+            dispatch({
+                type: ADD_COURSE_DATA,
+                payload: courseData || getRequest(`/api/courses/${course}`)
+            })
+        }
+    }
+}
+
+/**
+ * @param {string} schedule - schedule name
+ * @param {string} course - course name
  */
 export function removeCourse(schedule, course) {
     return (dispatch, getState) => {
@@ -110,6 +121,31 @@ export function updateSection(schedule, course, section) {
             course,
             sectionType: section.substring(0, 1),
             section: section
+        }
+    }
+}
+
+export function addSectionByCRN(schedule, crn) {
+    return (dispatch, getState) => {
+        let sectionName = '';
+        let course = getState().courses.find(c => {
+            return !!c.get('sections').find(section => {
+                sectionName = section.get('name');
+                return section.get('crn') === crn;
+            })
+        });
+
+        if (course) {
+            dispatch(updateSection(schedule, course.get('name'), sectionName));
+        } else {
+            getRequest(`/api/courses/${crn}`).then((data) => {
+                let section = Object.values(data.sections).find(s => {
+                    return s.crn.toString() === crn;
+                })
+
+                dispatch(addCourse(schedule, data.name, data));
+                dispatch(updateSection(schedule, data.name, section.name));
+            });
         }
     }
 }

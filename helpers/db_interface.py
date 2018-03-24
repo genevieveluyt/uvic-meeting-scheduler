@@ -28,24 +28,40 @@ class UvicSchedulerDBInterface:
         if term is None:
             term = self.get_latest_term()
 
+        try:
+            # If using CRN
+            int(course)
+            self.cursor.execute("""
+                SELECT course
+                FROM Sections
+                WHERE crn = %s and term = %s
+            """, (course, term))
+            course = self.cursor.fetchone()[0]
+        except ValueError:
+            pass
+
         self.cursor.execute("""
-            SELECT section_name, day, start_time, end_time
+            SELECT crn, section_name, day, start_time, end_time
             FROM Sections JOIN SectionTimes USING (crn) JOIN TimeBlocks ON (TimeBlocks.id=section_time)
             WHERE course = %s and term = %s
         """, (course, term))
 
         sections = {}
-        for section_name, day, start_time, end_time in self.cursor.fetchall():
+        for crn, section_name, day, start_time, end_time in self.cursor.fetchall():
             if not section_name in sections.keys():
-                sections[section_name] = []
+                sections[section_name] = {
+                    'crn': crn,
+                    'name': section_name,
+                    'times': []
+                }
             
-            sections[section_name].append({
+            sections[section_name]['times'].append({
                 'day': day,
                 'start': start_time,
                 'end': end_time
             })
 
-        return sections
+        return sections, course
     
     def get_latest_term(self):
         self.cursor.execute("""

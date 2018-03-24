@@ -19,14 +19,18 @@ import { LOAD_DATA } from '../actions/api';
  *      "CENG 421": {
  *          name: "CENG 421",
  *          sections: {
- *              A01: [
- *                  {
- *                      day: "M",
- *                      start: { hour: 13, minute: 30 },
- *                      end: { hour: 14, minute: 50 }
- *                  },
- *                  ...
- *              ],
+ *              A01: {
+ *                  name: "A01",
+ *                  crn: 20416,
+ *                  times: [
+ *                      {
+ *                          day: "M",
+ *                          start: { hour: 13, minute: 30 },
+ *                          end: { hour: 14, minute: 50 }
+ *                      },
+ *                      ...
+ *                  ]
+ *              },
  *              B01: ...
  *          }
  *      },
@@ -38,7 +42,7 @@ export default function(state=Map(), action) {
     switch(action.type) {
         case LOAD_DATA:
             return fromJS(action.payload.data);
-        case ADD_COURSE_DATA: 
+        case ADD_COURSE_DATA:
             return state.set(action.payload.name, fromJS(action.payload));
         case REMOVE_COURSE_DATA:
             return state.delete(action.payload);

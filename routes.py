@@ -42,11 +42,11 @@ def get_course_sections(course):
     return jsonify(get_course_data(course))
 
 def get_course_data(course):
-    sections = db_interface.get_sections(course)
+    sections, name = db_interface.get_sections(course)
 
     # Convert datetime.time objects into hour and minute so they can be jsonified
     for section_name in sections:
-        for time_block in sections[section_name]:
+        for time_block in sections[section_name]['times']:
             for t in ['start', 'end']:
                 time_block[t] = {
                     'hour': time_block[t].hour,
@@ -54,6 +54,6 @@ def get_course_data(course):
                 }
 
     return {
-        'name': course,
+        'name': name,
         'sections': sections
     }
