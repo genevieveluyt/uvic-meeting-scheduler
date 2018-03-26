@@ -18,7 +18,7 @@ class EditScheduleModal extends Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const scheduleField = newProps.open ? newProps.schedule : '';
+        const scheduleField = newProps.open && newProps.schedule ? newProps.schedule : '';
         this.setState({open: newProps.open, scheduleField});
     }
 

@@ -76,3 +76,25 @@ i.icon.remove-icon:hover {
 .conflict-popup td {
     padding: 0 5px;
 }
+
+.schedule-list-top-bar {
+    position: relative;
+}
+
+.schedule-list-top-bar::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.schedule-list-top-bar h3 {
+    display: inline-block;
+    position: absolute;
+    bottom: 0.1rem;
+    margin-bottom: 0;
+}
+
+.schedule-list-top-bar .ui.labeled.icon.button {
+    float: right;
+    margin-right: 0;
+}

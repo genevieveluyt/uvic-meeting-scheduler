@@ -4,15 +4,21 @@ import { Accordion, Icon, Button } from 'semantic-ui-react'
 
 import Schedule from './schedule';
 import EditScheduleModal from './editScheduleModal';
+import { getRequest } from '../actions/api';
 
 class ScheduleList extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            term: '',
             activeIndex: 0,
             modalOpen: false
         };
+
+        getRequest('/api/term').then(term => {
+            this.setState({term: parseTerm(term)});
+        })
 
         this.onClickSchedule = this.onClickSchedule.bind(this);
         this.renderSchedules = this.renderSchedules.bind(this);
@@ -54,12 +60,12 @@ class ScheduleList extends Component {
     render() {
         return (
             <div>
-                <div style={{textAlign: 'right'}}>
+                <div className='schedule-list-top-bar'>
+                    <h3>{this.state.term}</h3>
                     <Button icon='plus' labelPosition='left' content='Add Schedule'
                         onClick={() => {this.setState({
                             modalOpen: true })
                         }}
-                        style={{marginRight: 0}}
                     />
                 </div>
                 { this.props.userData.size === 0 ? '' :
@@ -74,6 +80,23 @@ class ScheduleList extends Component {
             </div>
         )
     }
+}
+
+function parseTerm(term) {
+    term = term.toString();
+    const year = term.substring(0, 4);
+    const month = parseInt(term.substring(4), 10);
+    let semester = '';
+
+    if (1 <= month && month <= 4) {
+        semester = "Spring";
+    } else if (5 <= month && month <= 8) {
+        semester = "Summer";
+    } else {
+        semester = "Fall";
+    }
+
+    return `${semester} ${year}`;
 }
 
 function mapStateToProps(state) {

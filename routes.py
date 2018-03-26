@@ -41,6 +41,10 @@ def get_course_names():
 def get_course_sections(course):
     return jsonify(get_course_data(course))
 
+@app.route('/api/term')
+def get_current_term():
+    return jsonify(db_interface.get_latest_term())
+
 def get_course_data(course):
     sections, name = db_interface.get_sections(course)
 
