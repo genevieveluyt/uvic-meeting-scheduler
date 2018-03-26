@@ -38,7 +38,7 @@ export function updateCourse(schedule, oldCourse, newCourse) {
 export function addCourse(schedule, course, courseData) {
     return (dispatch, getState) => {
         let courseExists = !!getState().userData.find(s => {
-            return !!s.get('courses').find(c => c.get('name') === course);
+            return schedule === s.get('name') && !!s.get('courses').find(c => c.get('name') === course);
         })
 
         if (!courseExists) {
@@ -63,8 +63,8 @@ export function addCourse(schedule, course, courseData) {
  */
 export function addCourseData(course, courseData) {
     return (dispatch, getState) => {
-        let courseExists = !!getState().courses.find(course =>
-            course.get('name') === course
+        let courseExists = !!getState().courses.find(c =>
+            c.get('name') === course
         );
         if (!courseExists) {
             dispatch({
@@ -131,11 +131,12 @@ export function addSectionByCRN(schedule, crn) {
         let course = getState().courses.find(c => {
             return !!c.get('sections').find(section => {
                 sectionName = section.get('name');
-                return section.get('crn') === crn;
+                return section.get('crn').toString() === crn;
             })
         });
 
         if (course) {
+            dispatch(addCourse(schedule, course.get('name')));
             dispatch(updateSection(schedule, course.get('name'), sectionName));
         } else {
             getRequest(`/api/courses/${crn}`).then((data) => {
