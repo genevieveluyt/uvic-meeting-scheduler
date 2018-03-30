@@ -22,7 +22,7 @@ class CourseList extends Component {
                             onClick={ () => this.props.removeCourse(this.props.schedule.get('name'), course.get('name')) }
                         />
                     </div>
-                    <SectionSelect schedule={this.props.schedule} course={course.toJS()} />
+                    <SectionSelect schedule={this.props.schedule} course={course.get('name')} />
                 </List.Item>
             )
         });

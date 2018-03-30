@@ -10,73 +10,50 @@ class SectionSelect extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            sections: []
-        }
-
-        if ('course' in props) {
-            this.state.sections = getSections(props.courses, props.course.name);
-            let userSections = props.schedule.get('courses')
-                .find(course => course.get('name') === props.course.name)
-                .get('sections').toObject();
-            Object.assign(this.state, userSections);
-        }
+        autoPopulateSections(props);
         
         this.getSuggestions = this.getSuggestions.bind(this);
         this.onSectionSelected = this.onSectionSelected.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
-        if ('course' in nextProps) {
-            let sections = getSections(nextProps.courses, nextProps.course.name);
-            this.setState({sections});
+        autoPopulateSections(nextProps);
+    }
 
-            // If there is no section selected and there is only one section
-            // for that section type, auto-select it
-            if (sections.length > 0) {
-                let sectionTypes = getSectionTypes(sections);
-                let userSections = nextProps.schedule.get('courses')
-                    .find(c => c.get('name') === nextProps.course.name)
-                    .get('sections').toJS();
-                
-                for (let sectionType of sectionTypes) {
-                    if (sectionType in userSections) {
-                        this.setState({[sectionType]: userSections[sectionType]});
-                    } else {
-                        let filteredSections = getSectionsOfType(sections, sectionType);
-                        if (filteredSections.length === 1) {
-                            nextProps.updateSection(nextProps.schedule.get('name'), nextProps.course.name, filteredSections[0]);
-                        }
-                    }
+    getUserSections() {
+        const sections = getSectionsByType(this.props);
+        const userSections = this.props.schedule.get('courses')
+            .find(c => c.get('name') === this.props.course)
+            .get('sections');
+        return Object.keys(sections).map(sectionType => {
+                const value = userSections.get(sectionType) || '';
+                return {
+                    type: sectionType,
+                    name: value
                 }
-            }
-        }
+            });
     }
 
     getSuggestions(sectionType) {
-        return getSectionsOfType(this.state.sections, sectionType)
+        return getSectionsByType(this.props)[sectionType]
             .map(section => { return {'key': section, 'value': section, 'text': section} });
     }
 
     onSectionSelected(event, { value }) {
         if (this.props.course) {
-            this.props.updateSection(this.props.schedule.get('name'), this.props.course.name, value);
+            this.props.updateSection(this.props.schedule.get('name'), this.props.course, value);
         }
     }
 
     renderSections() {
-        if (this.state.sections.length === 0) {
-            return '';
-        }
-
-        return getSectionTypes(this.state.sections).map(sectionType => {
+        return this.getUserSections().map(section => {
             return (
-                <Dropdown key={sectionType} className='section-select' selection
-                    options={this.getSuggestions(sectionType)}
+                <Dropdown key={section.type} className='section-select' selection
+                    options={this.getSuggestions(section.type)}
                     placeholder='Section'
                     onChange={this.onSectionSelected}
-                    text={this.state[sectionType]}
-                    value={this.state[sectionType]}
+                    text={section.name}
+                    value={section.name}
                 />
             )
         });
@@ -91,22 +68,38 @@ class SectionSelect extends Component {
     }
 }
 
-/**
- * Get a list of sections for the given course
- * 
- * @param {Immutable.Map} courses - dictionary of course objects
- * @param {String} course - course name
- */
-function getSections(courses, course) {
-    return courses.has(course) ? courses.get(course).get('sections').keySeq().toArray() : [];
+function autoPopulateSections(props) {
+    const sections = getSectionsByType(props);
+    const userSections = props.schedule.get('courses')
+        .find(c => c.get('name') === props.course)
+        .get('sections');
+    return Object.keys(sections).map(sectionType => {
+            if (!userSections.get(sectionType) && sections[sectionType].length === 1) {
+                if (sections[sectionType].length === 1) {
+                    props.updateSection(
+                        props.schedule.get('name'),
+                        props.course,
+                        sections[sectionType][0]
+                    );
+                }
+            }
+        });
 }
 
-function getSectionsOfType(sections, sectionType) {
-    return sections.filter(section => section.startsWith(sectionType)).sort();
-}
+function getSectionsByType(props) {
+    if (!('courses' in props)) {
+        return {};
+    }
 
-function getSectionTypes(sections) {
-    return Array.from(new Set(sections.map(section => section.substring(0, 1)))).sort();
+    const sections = props.courses.has(props.course)
+        ? props.courses.get(props.course).get('sections').keySeq().toArray()
+        : [];
+    const sectionTypes = Array.from(new Set(sections.map(section => section.substring(0, 1)))).sort();
+    let sectionsByType = {};
+    sectionTypes.forEach(sectionType => {
+        sectionsByType[sectionType] = sections.filter(section => section.startsWith(sectionType)).sort();
+    });
+    return sectionsByType;
 }
 
 function mapStateToProps(state) {
