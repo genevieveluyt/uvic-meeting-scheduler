@@ -73,17 +73,17 @@ function autoPopulateSections(props) {
     const userSections = props.schedule.get('courses')
         .find(c => c.get('name') === props.course)
         .get('sections');
-    return Object.keys(sections).map(sectionType => {
-            if (!userSections.get(sectionType) && sections[sectionType].length === 1) {
-                if (sections[sectionType].length === 1) {
-                    props.updateSection(
-                        props.schedule.get('name'),
-                        props.course,
-                        sections[sectionType][0]
-                    );
-                }
+    Object.keys(sections).forEach(sectionType => {
+        if (!userSections.get(sectionType) && sections[sectionType].length === 1) {
+            if (sections[sectionType].length === 1) {
+                props.updateSection(
+                    props.schedule.get('name'),
+                    props.course,
+                    sections[sectionType][0]
+                );
             }
-        });
+        }
+    });
 }
 
 function getSectionsByType(props) {

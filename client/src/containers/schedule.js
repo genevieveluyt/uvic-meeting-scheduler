@@ -3,9 +3,10 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Button, Modal, Form, Divider, TextArea, Message } from 'semantic-ui-react'
 
-import { addSectionByCRN } from '../actions/index';
+import { addSectionByCRN, removeSchedule } from '../actions/index';
 import CourseList from './course-list';
-import EditScheduleModal from './editScheduleModal';
+import EditScheduleModal from './edit-schedule-modal';
+
 
 class Schedule extends Component {
     constructor(props) {
@@ -15,7 +16,8 @@ class Schedule extends Component {
             editScheduleModalOpen: false,
             crnModalOpen: false,
             crnField: '',
-            crnError: ''
+            crnError: '',
+            deleteModalOpen: false
         };
 
         this.onCRNFormSubmit = this.onCRNFormSubmit.bind(this);
@@ -59,6 +61,30 @@ class Schedule extends Component {
         )
     }
 
+    renderDeleteModal() {
+        return (
+            <Modal size='tiny' open={this.state.deleteModalOpen}>
+                <Modal.Header>
+                    Delete Schedule
+                </Modal.Header>
+                <Modal.Content>
+                    <p>Are you sure you want to delete {this.props.schedule.get('name')}?</p>
+                </Modal.Content>
+                <Modal.Actions>
+                    <Button content='Cancel'
+                        onClick={() => {this.setState({ deleteModalOpen: false })}}
+                    />
+                    <Button negative icon='trash' content='Delete schedule'
+                        onClick={() => {
+                            this.props.removeSchedule(this.props.schedule.get('name'));
+                            this.setState({ deleteModalOpen: false });
+                        }}
+                    />
+                </Modal.Actions>
+            </Modal>
+        )
+    }
+
     render() {
         return (
             <div>
@@ -73,9 +99,14 @@ class Schedule extends Component {
                     })}
                 />
                 <Divider />
-                <Button basic icon='edit' content='Edit Schedule'
+                <Button basic color='blue' icon='edit' content='Edit Schedule'
                     onClick={() => this.setState({
                         editScheduleModalOpen: true
+                    })}
+                />
+                <Button negative icon='trash'
+                    onClick={() => this.setState({
+                        deleteModalOpen: true
                     })}
                 />
                 <EditScheduleModal 
@@ -84,13 +115,14 @@ class Schedule extends Component {
                     onChange={({open}) => this.setState({editScheduleModalOpen: open})}
                 />
                 { this.renderAddCRNModal() }
+                { this.renderDeleteModal() }
             </div>
         )
     }
 }
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({addSectionByCRN}, dispatch);
+    return bindActionCreators({addSectionByCRN, removeSchedule}, dispatch);
 }
 
 export default connect(null, mapDispatchToProps)(Schedule);
