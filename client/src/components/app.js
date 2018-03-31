@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Grid } from 'semantic-ui-react'
+import { Grid, Dimmer, Loader } from 'semantic-ui-react'
 
 import { loadData, getCourseNames } from '../actions/api';
 import { dismissError } from '../actions/index'
@@ -16,6 +16,23 @@ class App extends Component {
         props.loadData();
 
         this.renderErrorRow = this.renderErrorRow.bind(this);
+    }
+
+    getLoadingMessage() {
+        const messages = [
+            'Searching for the answer to Life, the Universe, and Everything',
+            'Hang on a sec, I know your data is here somewhere',
+            'Waiting for the system admin to hit enter...',
+            'Reconfiguring the office coffee machine...',
+            'Re-calibrating the internet...',
+            'Buying more RAM...',
+            'Waking up the hamsters...',
+            'Caching internet locally...',
+            'Connecting to nearest extraterrestrial communications tower...',
+            "I didn't lose your data, it's just very well hidden. For your security."
+        ];
+
+        return messages[Math.floor(Math.random() * messages.length)];
     }
 
     renderErrorRow() {
@@ -36,6 +53,9 @@ class App extends Component {
         return (
             <Grid container columns={2} relaxed className="full-height">
                 {this.renderErrorRow()}
+                <Dimmer active={this.props.courseNames.size === 0}>
+                    <Loader size='medium'>{this.getLoadingMessage()}</Loader>
+                </Dimmer>
                 <Grid.Row>
                     <Grid.Column width={10} >
                         <Timetable />
@@ -50,7 +70,10 @@ class App extends Component {
 }
 
 function mapStateToProps(state) {
-    return { error: state.error }
+    return {
+        error: state.error,
+        courseNames: state.courseNames
+    }
 }
 
 function mapDispatchToProps(dispatch) {
