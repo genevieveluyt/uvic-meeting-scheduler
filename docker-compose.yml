@@ -24,8 +24,7 @@ services:
     working_dir: /app
     volumes:
       - ./server:/app
-    environment:
-      FLASK_APP: app.py
+    env_file: dev.env
     depends_on:
       - db
 
@@ -36,7 +35,7 @@ services:
       - ./db_data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: uvicscheduler
-    env_file: ./docker/.env
+    env_file: dev.env
 
   adminer:
     image: adminer

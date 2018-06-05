@@ -1,3 +1,4 @@
+import os
 from . import app
 
-app.run(debug=True, host='0.0.0.0')
+app.run(debug=os.environ.get('DEBUG'), host='0.0.0.0')
