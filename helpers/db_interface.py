@@ -4,7 +4,7 @@ class UvicSchedulerDBInterface:
     DB_NAME = 'uvicscheduler'
 
     def __init__(self, user, password):
-        self.db = psycopg2.connect('dbname={} user={} password={}'.format(self.DB_NAME, user, password))
+        self.db = psycopg2.connect('postgresql://{}:{}@db/{}'.format(user, password, self.DB_NAME))
         self.cursor = self.db.cursor()
 
     def close(self):
