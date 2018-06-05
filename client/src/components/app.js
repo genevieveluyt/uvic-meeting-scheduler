@@ -18,23 +18,6 @@ class App extends Component {
         this.renderErrorRow = this.renderErrorRow.bind(this);
     }
 
-    getLoadingMessage() {
-        const messages = [
-            'Searching for the answer to Life, the Universe, and Everything',
-            'Hang on a sec, I know your data is here somewhere',
-            'Waiting for the system admin to hit enter...',
-            'Reconfiguring the office coffee machine...',
-            'Re-calibrating the internet...',
-            'Buying more RAM...',
-            'Waking up the hamsters...',
-            'Caching internet locally...',
-            'Connecting to nearest extraterrestrial communications tower...',
-            "I didn't lose your data, it's just very well hidden. For your security."
-        ];
-
-        return messages[Math.floor(Math.random() * messages.length)];
-    }
-
     renderErrorRow() {
         if (!this.props.error) return '';
 
@@ -54,7 +37,7 @@ class App extends Component {
             <Grid container columns={2} relaxed className="full-height">
                 {this.renderErrorRow()}
                 <Dimmer active={this.props.courseNames.size === 0}>
-                    <Loader size='medium'>{this.getLoadingMessage()}</Loader>
+                    <Loader size='medium'>{getLoadingMessage()}</Loader>
                 </Dimmer>
                 <Grid.Row>
                     <Grid.Column width={10} >
@@ -67,6 +50,22 @@ class App extends Component {
             </ Grid>
         );
     }
+}
+
+function getLoadingMessage() {
+    const messages = [
+        'Searching for the answer to Life, the Universe, and Everything',
+        'Hang on a sec, I know your data is here somewhere',
+        'Waiting for the system admin to hit enter...',
+        'Reconfiguring the office coffee machine...',
+        'Re-calibrating the internet...',
+        'Buying more RAM...',
+        'Waking up the hamsters...',
+        'Caching internet locally...',
+        "I didn't lose your data, it's just very well hidden. For your security."
+    ];
+
+    return messages[Math.floor(Math.random() * messages.length)];
 }
 
 function mapStateToProps(state) {

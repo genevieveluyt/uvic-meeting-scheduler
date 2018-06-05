@@ -11,41 +11,57 @@ class CourseSearch extends Component {
         super(props);
 
         this.state = {
-            value: 'course' in props ? props.course.name : "",
-            suggestions: [],
-            open: false
+            value: 'course' in props ? props.course.name : '',
+            text: 'course' in props ? props.course.name : '',
+            searchQuery: '',
+            suggestions: []
         };
         
-        this.getSuggestions = this.getSuggestions.bind(this);
-        this.onCourseSelected = this.onCourseSelected.bind(this);
+        this.onSearchChange = this.onSearchChange.bind(this);
+        this.onClose = this.onClose.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
         if ('course' in nextProps) {
-            this.setState({value: nextProps.course.name});
+            const value = nextProps.course.name;
+            if (value.length > 0 && value !== this.state.value) {
+                this.setState({ value, text: value });
+            }
         }
     }
 
-    getSuggestions(event, data) {
+    onSearchChange(event, data) {
         const value = data.searchQuery;
+        
+        this.setState({searchQuery: value});
+
         const inputValue = value.trim().toLowerCase();
         const inputLength = inputValue.length;
 
-        if (inputLength === 0) { return; }
+        if (inputLength === 0) {
+            this.setState({suggestions: []});
+            return;
+        }
 
         let coursesAlreadySelected = this.props.schedule.get('courses')
             .map(course => course.get('name'));
     
         let suggestions = this.props.courseNames.filter(course =>
-            !coursesAlreadySelected.includes(course) &&
+            (course => course !== data.value ||
+            !coursesAlreadySelected.includes(course)) &&
             course.toLowerCase().slice(0, inputLength) === inputValue
-        ).map(course => { return {'key': course, 'value': course, 'text': course} })
+        ).map(course => { return {'key': course, 'value': course, 'text': course}})
         .toArray();
 
-        this.setState({suggestions, open: true});
+        this.setState({suggestions});
     }
 
-    onCourseSelected(event, { value }) {
+    onClose(event, { value }) {
+        if (value.length === 0 || ('course' in this.props && value === this.props.course.name)) {
+            this.setState({text: value, searchQuery: ''});
+            return;
+        }
+
         if ('course' in this.props) {
             this.props.updateCourse(this.props.schedule.get('name'), this.props.course.name, value);
         } else {
@@ -55,20 +71,20 @@ class CourseSearch extends Component {
 
     render() {
         return (
-            <Dropdown placeholder='Type a course' fluid search selection
+            <Dropdown placeholder='Search for course' icon='' fluid search selection
                 className={this.props.className}
                 minCharacters={1}
                 options={this.state.suggestions}
-                onChange={this.onCourseSelected}
-                onSearchChange={this.getSuggestions}
-                onClick={() => {this.setState({open: false})}}
-                // Manually setting the "open" prop because with minCharacters={1}
-                // if the dropdown is clicked, it opens even though there are no
-                // characters... This is a problem because is there too much data
-                // to display without a filter, making the ui slow.
-                open={this.state.open}
-                text={this.state.value}
+                onChange={(event, { value }) => this.setState({ value })}
+                onSearchChange={this.onSearchChange}
+                onClose={this.onClose}
+                onClick={() => this.setState({text: ''})}
+                noResultsMessage={
+                    this.state.searchQuery.length > 0 ? 'No results found.' : 'Too many results.'
+                }
+                searchQuery={this.state.searchQuery}
                 value={this.state.value}
+                text={this.state.text}
             />
         );
     }

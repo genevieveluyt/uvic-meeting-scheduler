@@ -27,8 +27,12 @@ i.icon.remove-icon:hover {
     margin-top: 20px;
 }
 
-.course-list-item .course-search {
+.course-list-item .course-search:not(.course-search-new) {
     max-width: 80%;
+}
+
+.course-list-item .ui.search.selection.dropdown > input.search {
+    padding-right: 1em;
 }
 
 .ui.selection.dropdown.section-select {
@@ -97,4 +101,8 @@ i.icon.remove-icon:hover {
 .schedule-list-top-bar .ui.labeled.icon.button {
     float: right;
     margin-right: 0;
+}
+
+.ui.negative.button, .ui.negative.buttons .button {
+    background-color: #d9534f;
 }
