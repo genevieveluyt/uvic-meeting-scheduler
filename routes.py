@@ -1,5 +1,6 @@
 from . import app
 from flask import render_template, jsonify, request, session
+from datetime import datetime
 
 from . import db_interface
 
@@ -43,7 +44,16 @@ def get_course_sections(course):
 
 @app.route('/api/term')
 def get_current_term():
-    return jsonify(db_interface.get_latest_term())
+    now = datetime.now()
+    month = 0
+    if now.month >= 9:
+        month = 9
+    elif now.month >= 5:
+        month = 5
+    else:
+        month = 1
+
+    return jsonify(int("%d0%d" % (now.year, month)))
 
 def get_course_data(course):
     sections, name = db_interface.get_sections(course)
@@ -61,3 +71,4 @@ def get_course_data(course):
         'name': name,
         'sections': sections
     }
+

@@ -48,11 +48,26 @@ def main(user, password, term, subject, course, file_only, update_db):
         global db
         db = UvicSchedulerDBInterface(user, password)
     
-    terms = get_terms()
-    scrape_courses(term or terms[0], subject, course, custom_scrape, write_to_db)
+    if not term:
+        term = get_current_term()
+        
+    print('Scraping courses for', term)
+    scrape_courses(term, subject, course, custom_scrape, write_to_db)
 
     if write_to_db:
         db.close()
+
+def get_current_term():
+    now = datetime.now()
+    month = 0
+    if now.month >= 9:
+        month = 9
+    elif now.month >= 5:
+        month = 5
+    else:
+        month = 1
+
+    return "%d0%d" % (now.year, month)
 
 def get_terms():
     html = requests.post(TERMS_URL).text
@@ -105,9 +120,6 @@ def scrape_courses(term, subject, course, custom_scrape, write_to_db):
     for i, subj in enumerate(subjects):
         subject_payload['sel_subj'].append(subj)
         html = requests.post(SECTIONS_URL, params=subject_payload).text
-
-        with open('temp.html', 'w') as f:
-            f.write(html)
 
         matches = COURSE_DETAILS_REGEX.findall(html)
         prev_course = matches[0][0]
@@ -171,9 +183,10 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
     filledLength = int(length * iteration // total)
     bar = fill * filledLength + '-' * (length - filledLength)
     print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end = '\r')
+    
     # Print New Line on Complete
     if iteration == total: 
         print()
 
 if __name__ == '__main__':
-    main()
+    main() # pylint: disable=E1120
