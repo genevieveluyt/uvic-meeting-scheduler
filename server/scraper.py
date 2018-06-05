@@ -7,7 +7,7 @@ import os
 from datetime import datetime
 import psycopg2
 import click
-from helpers.db_interface import UvicSchedulerDBInterface
+from helpers.db_interface import UvicSchedulerDBInterface # pylint: disable=E0611
 
 
 DATA_ROOT = 'data'

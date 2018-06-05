@@ -23,11 +23,9 @@ services:
     image: uvicscheduler-server
     working_dir: /app
     volumes:
-      - ./:/app
+      - ./server:/app
     environment:
       FLASK_APP: app.py
-    ports:
-      - 5000:5000
     depends_on:
       - db
 
