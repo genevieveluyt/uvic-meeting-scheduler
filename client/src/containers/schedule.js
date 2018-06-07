@@ -4,8 +4,8 @@ import { bindActionCreators } from 'redux';
 import { Button, Modal, Form, Divider, TextArea, Message } from 'semantic-ui-react'
 
 import { addSectionByCRN, removeSchedule } from '../actions/index';
-import CourseList from './course-list';
-import EditScheduleModal from './edit-schedule-modal';
+import CourseList from './course_list';
+import EditScheduleModal from './edit_schedule_modal';
 
 
 class Schedule extends Component {

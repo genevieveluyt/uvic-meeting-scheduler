@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Accordion, Icon, Button } from 'semantic-ui-react'
 
 import Schedule from './schedule';
-import EditScheduleModal from './edit-schedule-modal';
+import EditScheduleModal from './edit_schedule_modal';
 import { getRequest } from '../actions/api';
 
 class ScheduleList extends Component {

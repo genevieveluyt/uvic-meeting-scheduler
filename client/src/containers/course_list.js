@@ -4,8 +4,8 @@ import { bindActionCreators } from 'redux';
 import { List } from 'semantic-ui-react';
 
 import { removeCourse } from '../actions/index';
-import CourseSearch from './course-search';
-import SectionSelect from './section-select';
+import CourseSearch from './course_search';
+import SectionSelect from './section_select';
 
 class CourseList extends Component {
     renderList() {

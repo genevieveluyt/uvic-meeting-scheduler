@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
 
-import CourseNames from './reducer_course-names';
+import CourseNames from './reducer_course_names';
 import Courses from './reducer_courses';
-import UserData from './reducer_user-data';
+import UserData from './reducer_user_data';
 import Error from './reducer_error';
 
 const rootReducer = combineReducers({

@@ -5,7 +5,7 @@ import { Grid, Dimmer, Loader } from 'semantic-ui-react'
 
 import { loadData, getCourseNames } from '../actions/api';
 import { dismissError } from '../actions/index'
-import ScheduleList from '../containers/schedule-list';
+import ScheduleList from '../containers/schedule_list';
 import Timetable from '../containers/timetable';
 import Message from 'semantic-ui-react/dist/commonjs/collections/Message/Message';
 
