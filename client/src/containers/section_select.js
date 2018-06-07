@@ -75,13 +75,11 @@ function autoPopulateSections(props) {
         .get('sections');
     Object.keys(sections).forEach(sectionType => {
         if (!userSections.get(sectionType) && sections[sectionType].length === 1) {
-            if (sections[sectionType].length === 1) {
-                props.updateSection(
-                    props.schedule.get('name'),
-                    props.course,
-                    sections[sectionType][0]
-                );
-            }
+            props.updateSection(
+                props.schedule.get('name'),
+                props.course,
+                sections[sectionType][0]
+            );
         }
     });
 }
